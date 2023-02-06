@@ -1,6 +1,18 @@
-# WWDC_Chart_crown
-
 ```swift
+import SwiftUI
+import Charts
+
+struct ContentView: View {
+    var body: some View {
+        ProductivityChart()
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
 
 struct Todo {
     let title: String
@@ -29,19 +41,40 @@ struct CharData {
     
 }
 
+extension Date {
+    
+    func updatedHour(_ value: Int) -> Date {
+        return Calendar.current.date(bySettingHour: value, minute: 0, second: 0, of: self) ?? .now
+    }
+    
+}
+
 struct ProductivityChart: View {
     
-    let data: [CharData.DataElement] = []
+    let data: [CharData.DataElement] = [
+        CharData.DataElement(date: Date().updatedHour(8), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(9), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(10), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(11), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(12), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(13), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(14), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(15), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(16), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(17), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(18), itemsComplete: Double.random(in: 0...10)),
+        CharData.DataElement(date: Date().updatedHour(19), itemsComplete: Double.random(in: 0...10)),
+    ]
     
     // MARK: - PROPERTIES FOR DIGITAL CROWN
     /// The index of the highlighted chart value. This is used for crown scrolling.
     @State var highlightDateIndex: Int = 0
-    
+     
     /// The current offset of the crown while it's rotating. This is set from
     /// the value in the DigitalCrownEvent and used to show an intermidate
     /// (between detents) chart value in the view
     @State var crownOffset: Double = 0.0
-    @State var isCrownIdle = false
+    @State var isCrownIdle = true
     
     @State var crownPositionOpacity: CGFloat = 0.2
     
@@ -63,9 +96,7 @@ struct ProductivityChart: View {
         Chart(self.data) { dataPoint in
             BarMark(
                 x: .value("Date", dataPoint.date),
-//                x: VisualEncoding("Date", \.date),
                 y: .value("Completed", dataPoint.itemsComplete)
-//                y: VisualEncoding("Completed", \.itemsComplete)
             )
             .foregroundStyle(Color.accentColor)
             // MARK: DISPLATY Digital Crown Value
@@ -101,7 +132,7 @@ struct ProductivityChart: View {
         // MARK: DIGITAL CROWN ANIMATION
         .onChange(of: self.isCrownIdle, perform: { newValue in
             withAnimation(newValue ? .easeOut: .easeIn) {
-                self.crownPositionOpacity = newValue ? 0.2 : 1.0
+                self.crownPositionOpacity = newValue ? 0 : 1.0
             }
         })
         // MARK: Display the current value while scrolling
@@ -114,7 +145,7 @@ struct ProductivityChart: View {
         .chartXAxis {
             AxisMarks { _ in
                 // Various Formats Are Ready. Must Match DataType `x: .value("Date", dataPoint.date),`
-                 AxisValueLabel(format: .dateTime)
+                AxisValueLabel(format: .dateTime)
             }
         }
         // MARK: CUSTOMIZING Y AXIS
@@ -140,6 +171,5 @@ struct ProductivityChart: View {
     }
     
 }
-
 
 ```
